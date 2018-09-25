@@ -1,4 +1,4 @@
-package com.erod.assignment.timezone;
+package com.erod.assignment.geolocation;
 
 import java.time.ZoneId;
 

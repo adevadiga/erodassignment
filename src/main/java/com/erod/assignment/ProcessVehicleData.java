@@ -13,13 +13,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.erod.assignment.model.Vehicle;
-import com.erod.assignment.model.Vehicle.VehicleDataBuilder;
-import com.erod.assignment.timezone.OfflineTimeshapeTimeZone;
+import com.erod.assignment.geolocation.OfflineTimeshapeTimeZone;
+import com.erod.assignment.geolocation.TimeZoneAPI;
+import com.erod.assignment.model.VehicleData;
+import com.erod.assignment.model.VehicleData.VehicleDataBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProcessVehicleData {
 
-    static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:s");
+    private static final Logger logger = LoggerFactory.getLogger(ProcessVehicleData.class);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:s");
+    private final TimeZoneAPI geoLocation;
+
+    public ProcessVehicleData() {
+        this.geoLocation = new OfflineTimeshapeTimeZone();
+    }
 
     public enum CSVDataType {
         DATETIME(1), LATITUDE(2), LONGITUDE(3);
@@ -40,104 +50,91 @@ public class ProcessVehicleData {
                 lookup.put(type.getColumnIndex(), type);
         }
 
-        public static CSVDataType get(int code) {
+        public static CSVDataType getType(int code) {
             return lookup.get(code);
         }
     }
 
     public void process(String path) throws IOException {
+        logger.info("Processing CSV file...");
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-
             String line = null;
             while ((line = reader.readLine()) != null) {
-
-                VehicleDataBuilder builder = new VehicleDataBuilder();
-
-                StringTokenizer st = new StringTokenizer(line, ",");
-                int column = 1;
-                while (st.hasMoreElements()) {
-                    String token = st.nextToken();
-                    // System.out.println(token);
-                    formatInputData(token, CSVDataType.get(column), builder);
-                    column++;
-                }
-
-                Vehicle vehicleData = builder.build();
-                System.out.println(vehicleData);
-                System.out.println("-----");
-                prettyPrintVehicleData(vehicleData);
-                System.out.println("-----");
+                VehicleData data = getVehicleDataFromRow(line);
+                writeFormattedVehicleData(data);
             }
         }
     }
 
-    private void formatInputData(String token, CSVDataType type, VehicleDataBuilder builder) {
+    private VehicleData getVehicleDataFromRow(String row) {
+        VehicleDataBuilder vehicleDataBuilder = new VehicleDataBuilder();
 
-        ZonedDateTime time = null;
-        if (type == CSVDataType.DATETIME) {
-            LocalDateTime utcDateTime = LocalDateTime.parse(token, formatter);
-            ZonedDateTime dateAndTimeInUtc = ZonedDateTime.of(utcDateTime, ZoneOffset.UTC);
-            System.out.println("ANOOOOOOOOO");
-            System.out.println("Current date and time in a particular timezone-UTC : " + dateAndTimeInUtc);
-
-            ZoneId australia = ZoneId.of("Pacific/Auckland");
-
-            //////
-            LocalDateTime localTime = dateAndTimeInUtc.toLocalDateTime();
-            System.out.println("localTime: " + localTime);
-            ZonedDateTime dateAndTimeInZone = ZonedDateTime.of(localTime, australia);
-            System.out.println("localTime Coverted: " + dateAndTimeInZone);
-            //////
-
-            ZonedDateTime utcDate = dateAndTimeInUtc.withZoneSameInstant(australia);
-            System.out.println("Current date and time in Australia : " + utcDate);
-
-            System.out.println("ANOOOOOOOOO");
-            time = utcDateTime.atZone(ZoneOffset.UTC);
-            System.out.println("***********");
-            System.out.println(time);
-            System.out.println("***********");
+        StringTokenizer st = new StringTokenizer(row, ",");
+        int columnIndex = 1;
+        while (st.hasMoreElements()) {
+            String token = st.nextToken();
+            readAndFormatCellData(token, CSVDataType.getType(columnIndex), vehicleDataBuilder);
+            columnIndex++;
         }
 
+        VehicleData vehicleData = vehicleDataBuilder.build();
+        ZoneId zoneId = this.geoLocation.findTimeZoneFromLocation(vehicleData.getLattitude(),
+                vehicleData.getLongitude());
+
+        vehicleData.processTimezoneData(zoneId);
+        return vehicleData;
+    }
+
+    private void writeFormattedVehicleData(VehicleData data) {
+        prettyPrintVehicleData(data);
+    }
+
+    /*
+     * private void processAndFormatData(String row) { VehicleDataBuilder
+     * vehicleDataBuilder = new VehicleDataBuilder();
+     * 
+     * StringTokenizer st = new StringTokenizer(row, ","); int columnIndex = 1;
+     * while (st.hasMoreElements()) { String token = st.nextToken();
+     * readAndFormatCellData(token, CSVDataType.getType(columnIndex),
+     * vehicleDataBuilder); columnIndex++; }
+     * 
+     * VehicleData vehicleData = vehicleDataBuilder.build();
+     * prettyPrintVehicleData(vehicleData); }
+     */
+
+    private void readAndFormatCellData(String token, CSVDataType type, VehicleDataBuilder builder) {
         switch (type) {
         case DATETIME:
             ZonedDateTime dateAndTimeInUtc = ZonedDateTime.of(LocalDateTime.parse(token, formatter), ZoneOffset.UTC);
-            builder.setDateTime(dateAndTimeInUtc);
+            builder.setDateTimeInUTC(dateAndTimeInUtc);
             return;
 
         case LATITUDE:
             double lattitude = Double.parseDouble(token);
-            System.out.println(lattitude);
             builder.setLattitude(lattitude);
             return;
 
         case LONGITUDE:
             double longitude = Double.parseDouble(token);
-            System.out.println(longitude);
             builder.setLongitude(longitude);
             return;
 
         default:
-            System.out.println("Invalid");
+            System.out.println("Ignoring the column.");
             return;
         }
     }
 
-    public void prettyPrintVehicleData(Vehicle vehicleData) {
-        ZoneId zoneId = new OfflineTimeshapeTimeZone().findTimeZoneFromLocation(vehicleData.getLattitude(),
+    public void prettyPrintVehicleData(VehicleData vehicleData) {
+        ZoneId zoneId = this.geoLocation.findTimeZoneFromLocation(vehicleData.getLattitude(),
                 vehicleData.getLongitude());
-        System.out.println("ZoneId..........." + zoneId);
+        String zoneName = zoneId.toString();
 
-        // ZonedDateTime utcDate =
-        // vehicleData.getDateTime().withZoneSameInstant(zoneId);
-        // ZonedDateTime dateAndTimeInZone = ZonedDateTime.of(vehicleData.getDateTime(),
-        // zoneId);
-        ZonedDateTime dateAndTimeInZone = vehicleData.getDateTime().withZoneSameInstant(zoneId);
+        ZonedDateTime dateAndTimeInZone = vehicleData.getDateTimeInUTC().withZoneSameInstant(zoneId);
+        LocalDateTime dateTime = dateAndTimeInZone.toLocalDateTime();
 
-        // System.out.println(dateAndTimeInZone);
-        System.out.println(dateAndTimeInZone.toLocalDateTime());
-        // System.out.println(dateAndTimeInZone.toOffsetDateTime());
-        // System.out.println(formatter.format(dateAndTimeInZone));
-
+        String toPrint = vehicleData.getDateTimeInUTC() + "," + vehicleData.getLattitude() + ","
+                + vehicleData.getLongitude() + "," + zoneName + "," + dateTime;
+        System.out.println(toPrint);
     }
 }

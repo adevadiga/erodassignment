@@ -1,6 +1,5 @@
-package com.erod.assignment.timezone;
+package com.erod.assignment.geolocation;
 
-import java.util.TimeZone;
 import java.util.Optional;
 import java.time.ZoneId;
 import net.iakovlev.timeshape.TimeZoneEngine;

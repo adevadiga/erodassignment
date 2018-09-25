@@ -1,18 +1,22 @@
 package com.erod.assignment.model;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-public class Vehicle {
+public class VehicleData {
 
-    private ZonedDateTime dateTime;
+    private ZonedDateTime dateTimeInUTC;
     private double longitude;
     private double lattitude;
+    private String timezone;
+    private LocalDateTime dateTimeinZone;
 
     /**
      * @return the dateTime
      */
-    public ZonedDateTime getDateTime() {
-        return dateTime;
+    public ZonedDateTime getDateTimeInUTC() {
+        return dateTimeInUTC;
     }
 
     /**
@@ -29,19 +33,19 @@ public class Vehicle {
         return lattitude;
     }
 
-    private Vehicle(VehicleDataBuilder builder) {
-        this.dateTime = builder.dateTime;
+    private VehicleData(VehicleDataBuilder builder) {
+        this.dateTimeInUTC = builder.dateTimeInUTC;
         this.longitude = builder.longitude;
         this.lattitude = builder.lattitude;
     }
 
     public static class VehicleDataBuilder {
-        private ZonedDateTime dateTime;
+        private ZonedDateTime dateTimeInUTC;
         private double longitude;
         private double lattitude;
 
-        public VehicleDataBuilder setDateTime(ZonedDateTime dateTime) {
-            this.dateTime = dateTime;
+        public VehicleDataBuilder setDateTimeInUTC(ZonedDateTime dateTime) {
+            this.dateTimeInUTC = dateTime;
             return this;
         }
 
@@ -55,10 +59,17 @@ public class Vehicle {
             return this;
         }
 
-        public Vehicle build() {
-            return new Vehicle(this);
+        public VehicleData build() {
+            return new VehicleData(this);
         }
 
+    }
+
+    public void processTimezoneData(ZoneId zoneId) {
+        this.timezone = zoneId.toString();
+        ZonedDateTime dateAndTimeInZone = this.dateTimeInUTC.withZoneSameInstant(zoneId);
+        LocalDateTime dateTime = dateAndTimeInZone.toLocalDateTime();
+        this.dateTimeinZone = dateTime;
     }
 
 }
