@@ -19,12 +19,12 @@ When you run the main class it processes the file, applied the transformation an
      Output: vehicleFormatted.csv  
      Class/Method: ProcessVehicleData.processAndWriteToFile()  
 
-2. The code can write transformation to logger
-    Input: src/main/resource/vehicle.csv
-    Ouput: Logger
-    Class/Method: ProcessVehicleData.process()
+2. The code can write transformation to logger  
+    Input: src/main/resource/vehicle.csv  
+    Ouput: Logger  
+    Class/Method: ProcessVehicleData.process()  
     
-3. The code uses two threads. One thread for reading file and another for writing to file. Both file operate on a BlockingQueue.
-    Input: src/main/resource/vehicle.csv
-    Ouput: vehicleFormatted_Th.csv
-    Class/Method: ProcessVehicleData.processWithWorkerThreads()
+3. The code uses two threads. One thread for reading file and another for writing to file. Both file operate on a BlockingQueue.  
+    Input: src/main/resource/vehicle.csv  
+    Ouput: vehicleFormatted_Th.csv  
+    Class/Method: ProcessVehicleData.processWithWorkerThreads()  
