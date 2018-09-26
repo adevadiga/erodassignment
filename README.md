@@ -15,9 +15,9 @@ When you run the main class it processes the file, applied the transformation an
 ## Different flows
 
 1. The code can write output to csv file
-     Input: src/main/resource/vehicle.csv<br>
-     Output: vehicleFormatted.csv
-     Class/Method: ProcessVehicleData.processAndWriteToFile()
+     Input: src/main/resource/vehicle.csv  
+     Output: vehicleFormatted.csv  
+     Class/Method: ProcessVehicleData.processAndWriteToFile()  
 
 2. The code can write transformation to logger
     Input: src/main/resource/vehicle.csv
