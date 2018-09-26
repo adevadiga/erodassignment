@@ -10,11 +10,6 @@ import com.erod.assignment.model.VehicleData.VehicleDataBuilder;
 
 public class VehicleDataHelper {
 
-    public VehicleData prepareVehicleDataFromRow(String row) {
-        VehicleDataBuilder vehicleDataBuilder = new VehicleDataBuilder();
-        readAndFormatCellData();
-    }
-
     public void readAndFormatCellData(String token, CSVDataType type, VehicleDataBuilder builder,
             DateTimeFormatter formatter) {
         switch (type) {

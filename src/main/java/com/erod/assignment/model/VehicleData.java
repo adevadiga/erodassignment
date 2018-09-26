@@ -3,8 +3,11 @@ package com.erod.assignment.model;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class VehicleData {
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:s");
 
     private ZonedDateTime dateTimeInUTC;
     private double longitude;
@@ -31,6 +34,20 @@ public class VehicleData {
      */
     public double getLattitude() {
         return lattitude;
+    }
+
+    /**
+     * @return the timezone
+     */
+    public String getTimezone() {
+        return timezone;
+    }
+
+    /**
+     * @return the dateTimeinZone
+     */
+    public LocalDateTime getDateTimeinZone() {
+        return dateTimeinZone;
     }
 
     private VehicleData(VehicleDataBuilder builder) {
@@ -67,9 +84,24 @@ public class VehicleData {
 
     public void processTimezoneData(ZoneId zoneId) {
         this.timezone = zoneId.toString();
-        ZonedDateTime dateAndTimeInZone = this.dateTimeInUTC.withZoneSameInstant(zoneId);
-        LocalDateTime dateTime = dateAndTimeInZone.toLocalDateTime();
-        this.dateTimeinZone = dateTime;
+
+        if (this.dateTimeInUTC == null) {
+            System.out.println(this.dateTimeInUTC);
+        }
+
+        if (this.dateTimeInUTC != null) {
+            ZonedDateTime dateAndTimeInZone = this.dateTimeInUTC.withZoneSameInstant(zoneId);
+            LocalDateTime dateTime = dateAndTimeInZone.toLocalDateTime();
+            this.dateTimeinZone = dateTime;
+        }
+    }
+
+    public String toString() {
+        ZonedDateTime zoneDT = this.dateTimeInUTC;
+        String formattedTime = zoneDT.format(formatter);
+        String toPrint = formattedTime + "," + this.lattitude + "," + this.longitude + "," + this.timezone + ","
+                + this.dateTimeinZone;
+        return toPrint;
     }
 
 }

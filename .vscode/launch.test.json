@@ -1,0 +1,30 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "erodassignment",
+                "projectName": "erodassignment",
+                "workingDirectory": "/Users/adevadiga/anoopdev/ASSIGNMENT/erodassignment",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "erodassignment",
+                "projectName": "erodassignment",
+                "workingDirectory": "/Users/adevadiga/anoopdev/ASSIGNMENT/erodassignment",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}

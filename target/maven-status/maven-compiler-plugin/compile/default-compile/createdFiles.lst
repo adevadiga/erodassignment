@@ -1,0 +1,16 @@
+com/erod/assignment/model/VehicleDataHelper$1.class
+com/erod/assignment/model/VehicleDataHelper.class
+com/erod/assignment/geolocation/OfflineTimeshapeTimeZone$Pair.class
+com/erod/assignment/model/VehicleData$VehicleDataBuilder.class
+com/erod/assignment/model/VehicleData$1.class
+com/erod/assignment/App.class
+com/erod/assignment/workers/ReaderThread.class
+com/erod/assignment/geolocation/OfflineTimeshapeTimeZone.class
+com/erod/assignment/model/VehicleData.class
+com/erod/assignment/workers/WriterThread.class
+com/erod/assignment/geolocation/TimeZoneAPI.class
+com/erod/assignment/geolocation/GeoLocationFactory.class
+com/erod/assignment/ProcessVehicleData$CSVDataType.class
+com/erod/assignment/ProcessVehicleData$1.class
+com/erod/assignment/ProcessVehicleData.class
+com/erod/assignment/geolocation/GoogleMapsTimeZone.class
