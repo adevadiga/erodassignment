@@ -9,7 +9,7 @@ Running locally
 
 Currently the code uses the file "vehicle.csv" file inside src/main/resource as input.
 
-When you run the main class it processes the file, applied the transformation and writes the formatted data to "vehicleFormatted.csv" file inside root folder.
+When you run the main class it processes the file, applies the transformation and writes the formatted data to "vehicleFormatted.csv" file inside root folder.
 
 
 ## Different flows
